@@ -192,6 +192,41 @@ func main() {
 }
 ```
 
+### Block mesh export
+
+Blocks placed on the integer grid can be exported as a triangle mesh for
+use in 3D tools. `Blocks.Mesh` produces indexed vertices, triangles,
+axis-aligned normals and per-face colors, and omits faces that are
+completely hidden by a neighbouring block.
+
+```go
+package main
+
+import "github.com/peterhellberg/gfx"
+
+func main() {
+	blocks := gfx.Blocks{
+		gfx.NewBlock(gfx.V3(0, 0, 0), gfx.V3(2, 1, 1), gfx.BlockColorRed),
+		gfx.NewBlock(gfx.V3(2, 0, 0), gfx.V3(1, 2, 1), gfx.BlockColorBlue),
+	}
+
+	// Write mesh.obj and mesh.mtl. The optional gfx.WithMeshMerge()
+	// combines coplanar exterior faces of the same color.
+	if err := blocks.ExportOBJ("mesh.obj", "mesh.mtl", gfx.WithMeshMerge()); err != nil {
+		gfx.Fatal(err)
+	}
+}
+```
+
+Positions and sizes must be integers (negative coordinates are fine), and
+blocks may touch but not overlap. `gfx.ErrMeshOverlap`,
+`gfx.ErrMeshNotGridAligned`, `gfx.ErrMeshDegenerateBlock`,
+`gfx.ErrMeshNonFinite`, `gfx.ErrMeshFaceLimit` and
+`gfx.ErrMeshCoordinateRange` describe the failure modes; use `errors.Is`
+to test for them. The order of the output only depends on the set of
+blocks, not on the order they were added, so exporting the same level
+twice produces identical files.
+
 ## Signed Distance Functions
 
 The `gfx.SignedDistance` type allows you to use basic [signed distance functions](http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/) (and operations) to produce some interesting graphics.
