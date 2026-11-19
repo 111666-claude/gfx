@@ -192,6 +192,21 @@ func main() {
 }
 ```
 
+### Picking blocks
+
+`Blocks.Pick` finds the block and face at a screen coordinate, using the same
+projection and drawing order as `Blocks.Draw`:
+
+```go
+hit, ok := blocks.Pick(gfx.IV(mouseX, mouseY), origin)
+```
+
+The returned `gfx.BlockHit` contains the index of the block in the slice, the
+face (`gfx.BlockFaceTop`, `gfx.BlockFaceLeft` or `gfx.BlockFaceRight`), the
+distance along the view direction and the picked point in block space. Sort the
+blocks with `Blocks.Sort` before drawing and picking to make the nearest block
+win, otherwise the block drawn last wins, which is the one visible on screen.
+
 ## Signed Distance Functions
 
 The `gfx.SignedDistance` type allows you to use basic [signed distance functions](http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/) (and operations) to produce some interesting graphics.
